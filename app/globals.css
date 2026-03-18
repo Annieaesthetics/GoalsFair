@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+:root {
+  /* Base colors - Pure white background for light mode */
+  --background: 0 0% 100%;
+  --foreground: 222.2 84% 4.9%;
+  
+  /* Card and surface colors */
+  --card: 0 0% 100%;
+  --card-foreground: 222.2 84% 4.9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222.2 84% 4.9%;
+  
+  /* Primary brand color - Emerald for growth */
+  --primary: 142 71% 45%;
+  --primary-foreground: 210 40% 98%;
+  
+  /* Secondary colors */
+  --secondary: 210 40% 96.1%;
+  --secondary-foreground: 222.2 47.4% 11.2%;
+  
+  /* Muted colors */
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  
+  /* Accent colors */
+  --accent: 210 40% 96.1%;
+  --accent-foreground: 222.2 47.4% 11.2%;
+  
+  /* Destructive/error colors */
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 210 40% 98%;
+  
+  /* Success - Lime */
+  --success: 82 81% 46%;
+  --success-foreground: 0 0% 100%;
+  
+  /* Warning - Orange */
+  --warning: 25 95% 53%;
+  --warning-foreground: 0 0% 100%;
+  
+  /* Info - Sky */
+  --info: 199 89% 48%;
+  --info-foreground: 0 0% 100%;
+  
+  /* Eco/Energy - Light Green */
+  --eco: 142 76% 56%;
+  --eco-foreground: 0 0% 100%;
+  
+  /* Border and input colors */
+  --border: 214.3 31.8% 91.4%;
+  --input: 214.3 31.8% 91.4%;
+  --ring: 221.2 83.2% 53.3%;
+  
+  --radius: 0.5rem;
+}
+
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+.dark {
+  /* Base colors - Pure black background for dark mode */
+  --background: 0 0% 0%;
+  --foreground: 0 0% 98%;
+  
+  /* Card and surface colors */
+  --card: 0 0% 0%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 0%;
+  --popover-foreground: 0 0% 98%;
+  
+  /* Primary brand color - Emerald lighter for dark mode */
+  --primary: 142 71% 45%;
+  --primary-foreground: 222.2 47.4% 11.2%;
+  
+  /* Secondary colors */
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 98%;
+  
+  /* Muted colors */
+  --muted: 0 0% 10%;
+  --muted-foreground: 0 0% 65%;
+  
+  /* Accent colors */
+  --accent: 0 0% 10%;
+  --accent-foreground: 0 0% 98%;
+  
+  /* Destructive/error colors */
+  --destructive: 0 84% 60%;
+  --destructive-foreground: 0 0% 98%;
+  
+  /* Success - Lime lighter */
+  --success: 82 75% 68%;
+  --success-foreground: 0 0% 0%;
+  
+  /* Warning - Orange lighter */
+  --warning: 25 95% 63%;
+  --warning-foreground: 0 0% 0%;
+  
+  /* Info - Sky lighter */
+  --info: 199 89% 64%;
+  --info-foreground: 0 0% 0%;
+  
+  /* Eco/Energy - Light Green lighter */
+  --eco: 142 69% 65%;
+  --eco-foreground: 0 0% 0%;
+  
+  /* Border and input colors */
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 224.3 76.3% 48%;
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+body {
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
