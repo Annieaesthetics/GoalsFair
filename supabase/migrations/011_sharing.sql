@@ -3,7 +3,7 @@
 
 -- Shared boards table
 CREATE TABLE shared_boards (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT,
@@ -24,7 +24,7 @@ CREATE TABLE shared_board_goals (
 
 -- Board comments (for public boards)
 CREATE TABLE board_comments (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   board_id UUID NOT NULL REFERENCES shared_boards(id) ON DELETE CASCADE,
   user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
   commenter_name TEXT NOT NULL,

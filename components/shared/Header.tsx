@@ -1,47 +1,27 @@
 'use client'
 
-import { Bell, Menu } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import Link from 'next/link'
+import { Bell } from 'lucide-react'
 import { ThemeToggle } from './ThemeToggle'
 import { UserMenu } from './UserMenu'
 
 interface HeaderProps {
-  onMenuClick?: () => void
   unreadCount?: number
 }
 
-export function Header({ onMenuClick, unreadCount = 0 }: HeaderProps) {
+export function Header({ unreadCount = 0 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b bg-background px-6">
-      <Button
-        variant="ghost"
-        size="icon"
-        className="lg:hidden"
-        onClick={onMenuClick}
-      >
-        <Menu className="h-6 w-6" />
-      </Button>
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-end gap-2 border-b border-gray-200 dark:border-gray-900 bg-white dark:bg-black px-6">
+      <ThemeToggle />
 
-      <div className="flex-1" />
+      <Link href="/notifications" className="relative p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-950 transition-colors">
+        <Bell className="w-4 h-4" />
+        {unreadCount > 0 && (
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-600 rounded-full" />
+        )}
+      </Link>
 
-      <div className="flex items-center gap-2">
-        <ThemeToggle />
-
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
-          {unreadCount > 0 && (
-            <Badge
-              variant="destructive"
-              className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-            >
-              {unreadCount > 9 ? '9+' : unreadCount}
-            </Badge>
-          )}
-        </Button>
-
-        <UserMenu />
-      </div>
+      <UserMenu />
     </header>
   )
 }

@@ -125,31 +125,13 @@ CREATE POLICY "Users can manage own milestones" ON goal_milestones
 
 -- Savings transactions policies
 CREATE POLICY "Users can view own transactions" ON savings_transactions
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM goals 
-      WHERE goals.id = savings_transactions.goal_id 
-      AND goals.user_id = auth.uid()
-    )
-  );
+  FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert own transactions" ON savings_transactions
-  FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM goals 
-      WHERE goals.id = savings_transactions.goal_id 
-      AND goals.user_id = auth.uid()
-    )
-  );
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete own transactions" ON savings_transactions
-  FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM goals 
-      WHERE goals.id = savings_transactions.goal_id 
-      AND goals.user_id = auth.uid()
-    )
-  );
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- Financial projections policies
 CREATE POLICY "Users can view own projections" ON financial_projections
@@ -176,31 +158,13 @@ CREATE POLICY "Users can delete own habits" ON habits
 
 -- Habit logs policies
 CREATE POLICY "Users can view own habit logs" ON habit_logs
-  FOR SELECT USING (
-    EXISTS (
-      SELECT 1 FROM habits 
-      WHERE habits.id = habit_logs.habit_id 
-      AND habits.user_id = auth.uid()
-    )
-  );
+  FOR SELECT USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert own habit logs" ON habit_logs
-  FOR INSERT WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM habits 
-      WHERE habits.id = habit_logs.habit_id 
-      AND habits.user_id = auth.uid()
-    )
-  );
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can delete own habit logs" ON habit_logs
-  FOR DELETE USING (
-    EXISTS (
-      SELECT 1 FROM habits 
-      WHERE habits.id = habit_logs.habit_id 
-      AND habits.user_id = auth.uid()
-    )
-  );
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- Reminders policies
 CREATE POLICY "Users can view own reminders" ON reminders

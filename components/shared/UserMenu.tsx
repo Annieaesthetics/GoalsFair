@@ -8,12 +8,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 
 export function UserMenu() {
   const router = useRouter()
@@ -26,41 +24,35 @@ export function UserMenu() {
     router.refresh()
   }
 
-  const initials = user?.email
-    ?.split('@')[0]
-    .slice(0, 2)
-    .toUpperCase() || 'U'
+  const initials = user?.email?.slice(0, 2).toUpperCase() || 'U'
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-          <Avatar className="h-9 w-9">
-            <AvatarImage src={user?.user_metadata?.avatar_url} alt={user?.email || ''} />
-            <AvatarFallback>{initials}</AvatarFallback>
+        <button className="rounded-full outline-none focus-visible:ring-2 focus-visible:ring-emerald-600">
+          <Avatar className="h-7 w-7">
+            <AvatarImage src={user?.user_metadata?.avatar_url} />
+            <AvatarFallback className="text-xs bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400">
+              {initials}
+            </AvatarFallback>
           </Avatar>
-        </Button>
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel>
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium">{user?.user_metadata?.full_name || 'User'}</p>
-            <p className="text-xs text-muted-foreground">{user?.email}</p>
-          </div>
-        </DropdownMenuLabel>
+      <DropdownMenuContent align="end" className="w-52">
+        <div className="px-2 py-1.5">
+          <p className="text-sm font-medium truncate">{user?.user_metadata?.full_name || 'User'}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+        </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => router.push('/dashboard/profile')}>
-          <User className="mr-2 h-4 w-4" />
-          Profile
+        <DropdownMenuItem onClick={() => router.push('/profile')}>
+          <User className="mr-2 h-4 w-4" /> Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => router.push('/dashboard/settings')}>
-          <Settings className="mr-2 h-4 w-4" />
-          Settings
+        <DropdownMenuItem onClick={() => router.push('/settings')}>
+          <Settings className="mr-2 h-4 w-4" /> Settings
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-error">
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-600 dark:text-red-400">
+          <LogOut className="mr-2 h-4 w-4" /> Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

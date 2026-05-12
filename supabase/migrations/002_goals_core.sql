@@ -3,7 +3,7 @@
 
 -- Goals table
 CREATE TABLE goals (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
   description TEXT,
@@ -26,7 +26,7 @@ CREATE TABLE goals (
 
 -- Goal images table (vision board)
 CREATE TABLE goal_images (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
   image_url TEXT NOT NULL,
   image_source TEXT CHECK (image_source IN ('unsplash', 'upload')),
@@ -36,7 +36,7 @@ CREATE TABLE goal_images (
 
 -- Goal tags table
 CREATE TABLE goal_tags (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   name TEXT NOT NULL UNIQUE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

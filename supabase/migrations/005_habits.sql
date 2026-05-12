@@ -3,7 +3,7 @@
 
 -- Habits table
 CREATE TABLE habits (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   goal_id UUID REFERENCES goals(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
@@ -19,7 +19,8 @@ CREATE TABLE habits (
 
 -- Habit logs table
 CREATE TABLE habit_logs (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   habit_id UUID NOT NULL REFERENCES habits(id) ON DELETE CASCADE,
   completed_date DATE NOT NULL,
   notes TEXT,
@@ -29,9 +30,10 @@ CREATE TABLE habit_logs (
 
 -- Indexes
 CREATE INDEX idx_habits_user_id ON habits(user_id);
+CREATE INDEX idx_habit_logs_user_id ON habit_logs(user_id);
+CREATE INDEX idx_habit_logs_habit_id ON habit_logs(habit_id);
 CREATE INDEX idx_habits_goal_id ON habits(goal_id);
 CREATE INDEX idx_habits_is_active ON habits(is_active);
-CREATE INDEX idx_habit_logs_habit_id ON habit_logs(habit_id);
 CREATE INDEX idx_habit_logs_completed_date ON habit_logs(completed_date);
 CREATE INDEX idx_habit_logs_habit_date ON habit_logs(habit_id, completed_date);
 

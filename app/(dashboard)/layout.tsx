@@ -1,18 +1,16 @@
 import { Sidebar } from '@/components/shared/Sidebar'
 import { Header } from '@/components/shared/Header'
+import { FloatingAIButton } from '@/components/ai/agent/FloatingAIButton'
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50 dark:bg-black">
       <Sidebar />
-      <div className="lg:pl-64">
+      <div className="lg:pl-56">
         <Header />
-        <main className="py-6 px-4 sm:px-6 lg:px-8">{children}</main>
+        <main className="px-8 py-8">{children}</main>
       </div>
+      <FloatingAIButton />
     </div>
   )
 }

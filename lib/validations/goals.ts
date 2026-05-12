@@ -11,7 +11,7 @@ export const goalCategorySchema = z.enum([
   'environment',
 ])
 
-export const goalStatusSchema = z.enum(['not_started', 'in_progress', 'completed', 'on_hold'])
+export const goalStatusSchema = z.enum(['active', 'completed', 'paused', 'archived'])
 
 export const goalPrioritySchema = z.enum(['low', 'medium', 'high'])
 
@@ -20,10 +20,9 @@ export const createGoalSchema = z.object({
   description: z.string().max(2000).optional(),
   category: goalCategorySchema,
   priority: goalPrioritySchema.default('medium'),
-  target_date: z.string().datetime().optional(),
+  target_date: z.string().optional(),
   is_public: z.boolean().default(false),
-  target_amount: z.number().positive().optional(),
-  current_amount: z.number().min(0).default(0).optional(),
+  estimated_cost: z.number().positive().optional(),
 })
 
 export const updateGoalSchema = createGoalSchema.partial().extend({

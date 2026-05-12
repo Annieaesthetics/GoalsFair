@@ -3,7 +3,7 @@
 
 -- Activity logs table (partitioned by month for performance)
 CREATE TABLE activity_logs (
-  id UUID DEFAULT uuid_generate_v4(),
+  id UUID DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   activity_type TEXT NOT NULL CHECK (activity_type IN (
     'goal_created', 'goal_updated', 'goal_completed', 'goal_deleted',
@@ -46,7 +46,7 @@ CREATE TABLE activity_logs_2025_12 PARTITION OF activity_logs
 
 -- Goal completion events (for analytics)
 CREATE TABLE goal_completion_events (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
   goal_title TEXT NOT NULL,

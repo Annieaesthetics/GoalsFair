@@ -3,7 +3,8 @@
 
 -- Savings transactions table
 CREATE TABLE savings_transactions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
   amount DECIMAL(12, 2) NOT NULL,
   transaction_type TEXT DEFAULT 'deposit' CHECK (transaction_type IN ('deposit', 'withdrawal')),
@@ -14,7 +15,7 @@ CREATE TABLE savings_transactions (
 
 -- Financial projections table
 CREATE TABLE financial_projections (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE UNIQUE,
   monthly_required DECIMAL(12, 2),
   weekly_required DECIMAL(12, 2),
@@ -25,6 +26,7 @@ CREATE TABLE financial_projections (
 );
 
 -- Indexes
+CREATE INDEX idx_savings_transactions_user_id ON savings_transactions(user_id);
 CREATE INDEX idx_savings_transactions_goal_id ON savings_transactions(goal_id);
 CREATE INDEX idx_savings_transactions_date ON savings_transactions(transaction_date);
 CREATE INDEX idx_financial_projections_goal_id ON financial_projections(goal_id);
@@ -40,6 +42,8 @@ CREATE OR REPLACE FUNCTION update_goal_savings()
 RETURNS TRIGGER AS $$
 DECLARE
   total_savings DECIMAL(12, 2);
+  goal_target DECIMAL(12, 2);
+  new_progress INTEGER;
 BEGIN
   SELECT COALESCE(
     SUM(CASE 
@@ -50,9 +54,18 @@ BEGIN
   INTO total_savings
   FROM savings_transactions
   WHERE goal_id = NEW.goal_id;
-  
+
+  SELECT estimated_cost INTO goal_target FROM goals WHERE id = NEW.goal_id;
+
+  IF goal_target IS NOT NULL AND goal_target > 0 THEN
+    new_progress := LEAST(ROUND((total_savings / goal_target) * 100), 100);
+  ELSE
+    new_progress := 0;
+  END IF;
+
   UPDATE goals
-  SET current_savings = total_savings
+  SET current_savings = total_savings,
+      progress_percentage = new_progress
   WHERE id = NEW.goal_id;
   
   RETURN NEW;
@@ -80,7 +93,7 @@ BEGIN
   FROM goals
   WHERE id = goal_uuid;
   
-  IF goal_record.estimated_cost IS NULL OR goal_record.target_date IS NULL THEN
+  IF goal_record IS NULL OR goal_record.estimated_cost IS NULL OR goal_record.target_date IS NULL THEN
     RETURN;
   END IF;
   
@@ -113,6 +126,8 @@ BEGIN
     weekly_required = EXCLUDED.weekly_required,
     projected_completion_date = EXCLUDED.projected_completion_date,
     last_calculated_at = NOW();
+EXCEPTION WHEN OTHERS THEN
+  RAISE WARNING 'calculate_financial_projections error: %', SQLERRM;
 END;
 $$ LANGUAGE plpgsql;
 

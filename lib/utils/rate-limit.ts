@@ -1,15 +1,23 @@
 import { Redis } from '@upstash/redis'
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL!,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN!,
-})
+const url = process.env.UPSTASH_REDIS_REST_URL
+const token = process.env.UPSTASH_REDIS_REST_TOKEN ?? process.env.UPSTASH_API_KEY
+
+let redis: Redis | null = null
+if (url && token) {
+  redis = new Redis({ url, token })
+}
 
 export async function rateLimit(
   identifier: string,
   limit: number = 60,
   window: number = 60
 ): Promise<{ success: boolean; remaining: number; reset: number }> {
+  // If Redis not configured, allow all requests
+  if (!redis) {
+    return { success: true, remaining: limit, reset: Date.now() + window * 1000 }
+  }
+
   const key = `rate_limit:${identifier}`
   const now = Date.now()
   const windowStart = now - window * 1000
@@ -23,9 +31,9 @@ export async function rateLimit(
   const results = await pipeline.exec()
   const count = results[2] as number
 
-  const success = count <= limit
-  const remaining = Math.max(0, limit - count)
-  const reset = Math.ceil((now + window * 1000) / 1000)
-
-  return { success, remaining, reset }
+  return {
+    success: count <= limit,
+    remaining: Math.max(0, limit - count),
+    reset: Math.ceil((now + window * 1000) / 1000),
+  }
 }

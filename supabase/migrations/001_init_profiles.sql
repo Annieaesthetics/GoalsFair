@@ -1,7 +1,8 @@
 -- Migration 001: Initialize profiles and user preferences tables
 -- Description: Core user profile data with preferences and settings
 
--- Enable UUID extension
+-- Enable UUID extension (pgcrypto is preferred in newer Supabase)
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Profiles table (extends Supabase auth.users)
@@ -17,7 +18,7 @@ CREATE TABLE profiles (
 
 -- User preferences table
 CREATE TABLE user_preferences (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   theme TEXT DEFAULT 'system' CHECK (theme IN ('light', 'dark', 'system')),
   reminder_time TIME DEFAULT '09:00:00',
@@ -58,20 +59,29 @@ CREATE TRIGGER update_user_preferences_updated_at
 CREATE OR REPLACE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO profiles (id, email, full_name, avatar_url)
+  INSERT INTO public.profiles (id, email, full_name, avatar_url)
   VALUES (
     NEW.id,
-    NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    COALESCE(NEW.email, ''),
+    COALESCE(
+      NEW.raw_user_meta_data->>'full_name',
+      NEW.raw_user_meta_data->>'name',
+      split_part(COALESCE(NEW.email, ''), '@', 1)
+    ),
     NEW.raw_user_meta_data->>'avatar_url'
-  );
-  
-  INSERT INTO user_preferences (user_id)
-  VALUES (NEW.id);
-  
+  )
+  ON CONFLICT (id) DO NOTHING;
+
+  INSERT INTO public.user_preferences (user_id)
+  VALUES (NEW.id)
+  ON CONFLICT (user_id) DO NOTHING;
+
+  RETURN NEW;
+EXCEPTION WHEN OTHERS THEN
+  RAISE WARNING 'handle_new_user error: %', SQLERRM;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Trigger to auto-create profile on signup
 CREATE TRIGGER on_auth_user_created

@@ -4,173 +4,126 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
-import { Mail, Lock, User, Chrome } from 'lucide-react'
+import { Target, Chrome } from 'lucide-react'
 
 export default function SignupPage() {
   const router = useRouter()
+  const [fullName, setFullName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [fullName, setFullName] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (password.length < 8) { setError('Password must be at least 8 characters'); return }
     setLoading(true)
     setError('')
-
-    if (password.length < 8) {
-      setError('Password must be at least 8 characters')
-      setLoading(false)
-      return
-    }
-
     const supabase = createClient()
     const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          full_name: fullName,
-        },
-      },
+      email, password,
+      options: { data: { full_name: fullName } },
     })
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    } else {
-      router.push('/dashboard')
-      router.refresh()
-    }
+    if (error) { setError(error.message); setLoading(false) }
+    else { router.push('/dashboard'); router.refresh() }
   }
 
   const handleGoogleSignup = async () => {
     setLoading(true)
-    setError('')
-
     const supabase = createClient()
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     })
-
-    if (error) {
-      setError(error.message)
-      setLoading(false)
-    }
+    if (error) { setError(error.message); setLoading(false) }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-md space-y-8">
-        <div className="text-center">
-          <h1 className="text-3xl font-bold">Create your account</h1>
-          <p className="text-muted-foreground mt-2">Start achieving your goals today</p>
+    <div className="min-h-screen bg-white dark:bg-black flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="flex items-center gap-2 mb-10">
+          <Target className="w-5 h-5 text-emerald-600" />
+          <span className="font-semibold">Goals Fair</span>
         </div>
 
-        <div className="bg-card border rounded-lg p-6 space-y-6">
+        <h1 className="text-2xl font-semibold text-black dark:text-white mb-1">Create account</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">Start achieving your goals today</p>
+
+        {/* Google */}
+        <button
+          onClick={handleGoogleSignup}
+          disabled={loading}
+          className="w-full flex items-center justify-center gap-3 px-4 py-2.5 border border-gray-200 dark:border-gray-800 rounded-lg text-sm font-medium text-black dark:text-white hover:bg-gray-50 dark:hover:bg-gray-950 transition-colors disabled:opacity-50 mb-6"
+        >
+          <Chrome className="w-4 h-4" />
+          Continue with Google
+        </button>
+
+        <div className="flex items-center gap-3 mb-6">
+          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-900" />
+          <span className="text-xs text-gray-400">or</span>
+          <div className="flex-1 h-px bg-gray-100 dark:bg-gray-900" />
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleEmailSignup} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-1.5">Full name</label>
+            <input
+              type="text"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              required
+              placeholder="Jane Doe"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-shadow"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-1.5">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="you@example.com"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-shadow"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-black dark:text-white mb-1.5">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={8}
+              placeholder="Min. 8 characters"
+              className="w-full px-3 py-2.5 text-sm border border-gray-200 dark:border-gray-800 rounded-lg bg-white dark:bg-black text-black dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:border-transparent transition-shadow"
+            />
+          </div>
+
+          {error && (
+            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+          )}
+
           <button
-            onClick={handleGoogleSignup}
+            type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 border rounded-lg hover:bg-accent transition-colors disabled:opacity-50"
+            className="w-full py-2.5 bg-black dark:bg-white text-white dark:text-black text-sm font-medium rounded-lg hover:opacity-80 transition-opacity disabled:opacity-50"
           >
-            <Chrome className="w-5 h-5" />
-            Continue with Google
+            {loading ? 'Creating account...' : 'Create account'}
           </button>
+        </form>
 
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-card text-muted-foreground">Or continue with</span>
-            </div>
-          </div>
-
-          <form onSubmit={handleEmailSignup} className="space-y-4">
-            <div>
-              <label htmlFor="fullName" className="block text-sm font-medium mb-2">
-                Full Name
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                  placeholder="John Doe"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-2">
-                Email
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                  placeholder="you@example.com"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-2">
-                Password
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-background"
-                  placeholder="••••••••"
-                />
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Must be at least 8 characters
-              </p>
-            </div>
-
-            {error && (
-              <div className="text-sm text-error bg-error/10 border border-error/20 rounded-lg p-3">
-                {error}
-              </div>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-primary text-primary-foreground py-2 rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50"
-            >
-              {loading ? 'Creating account...' : 'Create account'}
-            </button>
-          </form>
-
-          <div className="text-center text-sm text-muted-foreground">
-            Already have an account?{' '}
-            <Link href="/login" className="text-primary hover:underline">
-              Sign in
-            </Link>
-          </div>
-        </div>
+        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+          Already have an account?{' '}
+          <Link href="/login" className="text-black dark:text-white font-medium hover:underline">
+            Sign in
+          </Link>
+        </p>
       </div>
     </div>
   )

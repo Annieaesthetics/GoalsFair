@@ -2,7 +2,7 @@
 -- Description: Scheduled reminders for goals and habits
 
 CREATE TABLE reminders (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   goal_id UUID REFERENCES goals(id) ON DELETE CASCADE,
   habit_id UUID REFERENCES habits(id) ON DELETE CASCADE,

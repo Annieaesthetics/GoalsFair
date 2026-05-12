@@ -2,7 +2,7 @@
 -- Description: In-app notification center
 
 CREATE TABLE notifications (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   type TEXT NOT NULL CHECK (type IN (
     'goal_completed', 'milestone_completed', 'habit_streak', 

@@ -3,7 +3,7 @@
 
 -- Achievements table
 CREATE TABLE achievements (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   slug TEXT NOT NULL UNIQUE,
   title TEXT NOT NULL,
   description TEXT NOT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE achievements (
 
 -- User achievements (junction table)
 CREATE TABLE user_achievements (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   achievement_id UUID NOT NULL REFERENCES achievements(id) ON DELETE CASCADE,
   unlocked_at TIMESTAMPTZ DEFAULT NOW(),
